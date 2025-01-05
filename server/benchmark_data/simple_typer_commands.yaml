@@ -341,13 +341,11 @@ base_prompt: |
 evaluator: "raw_string_evaluator"
 models:
   - "llama3.2:1b"
-  - "llama3.2:latest"
-  - "qwen2.5-coder:14b"
-  - "falcon3:10b"
-  - "vanilj/Phi-4:latest"
-  - "anthropic~claude-3-5-sonnet-latest"
+  - "llama3.2:latest" 
+  - "ollama~falcon3:10b"
+  - "ollama~vanilj/Phi-4:latest"
+  - "ollama~qwen2.5-coder:14b"
   - "deepseek~deepseek-chat"
-model_provider: "ollama"
 
 prompts:
   - dynamic_variables:

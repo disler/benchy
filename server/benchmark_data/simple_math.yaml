@@ -19,11 +19,11 @@ base_prompt: |
 evaluator: "execute_python_code_with_num_output"
 models:
   - "llama3.2:1b"
-  # - "llama3.2:latest"
-  # - "qwen2.5-coder:14b"
-  - "falcon3:10b"
-  # - "vanilj/Phi-4:latest"
-  - "anthropic~claude-3-5-sonnet-latest"
+  - "llama3.2:latest" 
+  - "ollama~falcon3:10b"
+  - "ollama~vanilj/Phi-4:latest"
+  - "ollama~qwen2.5-coder:14b"
+  - "ollama~qwen2.5-coder:32b"
   - "deepseek~deepseek-chat"
 prompts:
   - dynamic_variables:
@@ -76,7 +76,7 @@ prompts:
 
   - dynamic_variables:
       statement: "calculate the area of a circle with radius 5 using π = 3.14159"
-    expectation: "78.53975"
+    expectation: "78.54"
 
   - dynamic_variables:
       statement: "find the greatest common divisor of 48 and 18"
@@ -92,7 +92,7 @@ prompts:
 
   - dynamic_variables:
       statement: "compute the volume of a sphere with radius 5 using π=3.14159"
-    expectation: "523.59875"
+    expectation: "523.60"
 
   - dynamic_variables:
       statement: "compute sin(30 degrees) in decimal form"
@@ -104,7 +104,7 @@ prompts:
 
   - dynamic_variables:
       statement: "compute e^2 with e=2.71828"
-    expectation: "7.38906"
+    expectation: "7.39"
 
   - dynamic_variables:
       statement: "convert 100 fahrenheit to celsius using formula C=(F-32)*5/9"
@@ -144,4 +144,4 @@ prompts:
 
   - dynamic_variables:
       statement: "convert the fraction 3/8 to decimal form"
-    expectation: "0.375"
+    expectation: "0.38"

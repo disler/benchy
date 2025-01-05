@@ -339,8 +339,12 @@ base_prompt: |
   </stt-requests>
 
 evaluator: "raw_string_evaluator"
-models: ["llama3.2:1b", "anthropic~claude-3-5-sonnet-latest", "deepseek~deepseek-chat"]
-model_provider: "ollama"
+models:
+  - "llama3.2:1b"
+  - "llama3.2:latest" 
+  - "ollama~falcon3:10b"
+  - "ollama~vanilj/Phi-4:latest"
+  - "deepseek~deepseek-chat"
 
 prompts:
   - dynamic_variables:
@@ -354,3 +358,51 @@ prompts:
   - dynamic_variables:
       stt_request: "Please list files in /home/user including hidden ones"
     expectation: "python main.py list-files /home/user --all"
+
+  - dynamic_variables:
+      stt_request: "Create a new user named alice with role admin"
+    expectation: "python main.py create-user alice --role=admin"
+
+  - dynamic_variables:
+      stt_request: "Delete user with ID user123, skip confirmation"
+    expectation: "python main.py delete-user user123 --confirm"
+
+  - dynamic_variables:
+      stt_request: "Generate a sales report in the file sales_report.csv"
+    expectation: "python main.py generate-report sales --output=sales_report.csv"
+
+  - dynamic_variables:
+      stt_request: "Back up data to /var/backups with a full backup"
+    expectation: "python main.py backup_data /var/backups --full"
+
+  - dynamic_variables:
+      stt_request: "Restore data from backup.tar and overwrite existing stuff"
+    expectation: "python main.py restore_data backup.tar --overwrite"
+
+  - dynamic_variables:
+      stt_request: "Summarize logs from /var/log/app, show 200 lines"
+    expectation: "python main.py summarize_logs /var/log/app --lines=200"
+
+  - dynamic_variables:
+      stt_request: "Upload the file data.csv to staging with secure upload"
+    expectation: "python main.py upload_file data.csv --destination=staging --secure"
+
+  - dynamic_variables:
+      stt_request: "Download from http://example.com/myfile.zip to downloads and retry 5 times"
+    expectation: "python main.py download_file http://example.com/myfile.zip --output=downloads --retry=5"
+
+  - dynamic_variables:
+      stt_request: "Filter records from database using name='john' and limit to 2 results"
+    expectation: "python main.py filter_records database --query=name='john' --limit=2"
+
+  - dynamic_variables:
+      stt_request: "Validate schema in schema.json with data file record1.json in strict mode"
+    expectation: "python main.py validate_schema schema.json --data=record1.json --strict"
+
+  - dynamic_variables:
+      stt_request: "Sync the remote called origin forcefully"
+    expectation: "python main.py sync_remotes origin --force"
+
+  - dynamic_variables:
+      stt_request: "Simulate run scenario test_scenario for 10 cycles in debug mode"
+    expectation: "python main.py simulate_run test_scenario --cycles=10 --debug"

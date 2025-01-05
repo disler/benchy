@@ -161,6 +161,9 @@ const getProviderLogo = computed(() => {
 });
 
 function formatModelName(modelName: string): string {
+  if (modelName.includes("deep")) {
+    return "deepseek-v3";
+  }
   if (!store.settings.showProviderPrefix && modelName.includes("~")) {
     return modelName.split("~")[1];
   }
