@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+RESET=$'\033[0m'
+BOLD=$'\033[1m'
+
+YELLOW=$'\033[33m'
+BLUE=$'\033[34m'
+BRIGHT_BLACK=$'\033[90m'
+BRIGHT_WHITE=$'\033[97m'
+
+BG_BLUE=$'\033[44m'
+BG_GREEN=$'\033[42m'
+BG_YELLOW=$'\033[43m'
+BG_BRIGHT_BLACK=$'\033[100m'
+BG_BRIGHT_MAGENTA=$'\033[105m'
+BG_BRIGHT_RED=$'\033[101m'
+BG_BRIGHT_BLUE=$'\033[104m'
+
+# A global array to track PIDs for backgrounded commands
+pids=()
+
+# dir_exists() <filepath>
+#
+# tests whether the filepath represents a valid directory
+function dir_exists() {
+    local dir="${1:?no filepath passed to directory_exists!}"
+
+    if [[ -d "${dir}" ]]; then
+        return 0;
+    else
+        return 1;
+    fi    
+}
+
+# file_exists <filepath>
+#
+# tests whether a given filepath exists in the filesystem
+function file_exists() {
+    local filepath="${1:?filepath is missing}"
+
+    if [ -f "${filepath}" ]; then
+        return 0;
+    else
+        return 1;
+    fi
+}
+
+# has_command <cmd>
+#
+# checks whether a particular program passed in via $1 is installed 
+# on the OS or not (at least within the $PATH)
+function has_command() {
+    local -r cmd="${1:?cmd is missing}"
+
+    if command -v "${cmd}" &> /dev/null; then
+        return 0
+    else 
+        return 1
+    fi
+}
+
+# os
+# 
+# Will try to detect the operating system of the host computer
+# where options are: darwin, linux, windowsnt, 
+function os() {
+    local -r os_type=$(lc "${OSTYPE}") || "$(lc "$(uname)")" || "unknown"
+    case "$os_type" in
+        'linux'*)
+           echo "linux"
+          ;;
+        'freebsd'*)
+          echo "freebsd"
+          ;;
+        'windowsnt'*)
+          echo "windows"
+          ;;
+        'darwin'*) 
+          echo "macos"
+          ;;
+        'sunos'*)
+          echo "solaris"
+          ;;
+        'aix'*) 
+          echo "aix"
+          ;;
+        *) echo "unknown/${os_type}"
+    esac
+}
+
+# isMacOrLinux()
+#
+# Returns `true` if current OS is macOS or Linux
+function isMacOrLinux() {
+    local -r os="$(os)";
+
+    if [[ "${os}" == "linux" ]]; then
+        return 0;
+    elif [[ "${os}" == "macos" ]]; then
+        return 0;
+    else
+        return 1;
+    fi
+}
+
+# is_key_set(file, key)
+#
+# checks whether the "key" in a given file is set or empty
+is_key_set() {
+    local -r file="${1:?no file passed to is_key_set()!}"
+    local -r key="${2:?no key passed to is_key_set()!}"
+
+    if ! file_exists "${file}"; then
+      return 2;
+    fi
+
+    if grep -q "^$key=" "$file"; then
+        local value
+        value=$(grep "^$key=" "$file" | cut -d'=' -f2-)
+        if [[ -n $value ]]; then
+            return 0  # Key is set
+        fi
+    fi
+
+    return 1;
+}
+
+install_uv() {
+  if has_command "curl"; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh | sed "s/^/${BG_BRIGHT_RED}${BRIGHT_BLACK} Install ${RESET}/"
+  elif has_command "wget"; then
+    wget -qO- https://astral.sh/uv/install.sh | sh | sed "s/^/${BG_BRIGHT_RED}${BRIGHT_BLACK} Install ${RESET}/"
+  else 
+    echo "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - sorry but you must have either ${BLUE}curl${RESET} or ${BLUE}curl${RESET} installed first."
+    exit 1;
+  fi
+}
+
+uv_sync() {
+    # uv is installed but not synced
+    cd "./server" &>/dev/null || exit
+    echo "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - installing Python dependencies with UV"
+    uv sync | sed "s/^/${BG_BRIGHT_RED}${BRIGHT_BLACK} Install ${RESET}/"
+    cd - &>/dev/null || exit
+}
+
+install() {
+  # FRONTEND
+  if ! dir_exists "node_modules"; then
+    if has_command "bun"; then
+        echo "${BG_BRIGHT_MAGENTA}${BOLD}${BRIGHT_BLACK} Install ${RESET} - installing frontend deps with ${BOLD}Bun${RESET}"
+        bun install | sed "s/^/${BG_BRIGHT_MAGENTA}${BRIGHT_BLACK} Install ${RESET}/"
+    elif has_command "pnpm"; then
+        echo "${BG_BRIGHT_MAGENTA}${BOLD}${BRIGHT_BLACK} Install ${RESET} - installing frontend deps with ${BOLD}pnpm${RESET}"
+        pnpm install | sed "s/^/${BG_BRIGHT_MAGENTA}${BRIGHT_BLACK} Install ${RESET}/"
+    elif has_command "npm"; then
+        echo "${BG_BRIGHT_MAGENTA}${BOLD}${BRIGHT_BLACK} Install ${RESET} - installing frontend deps with ${BOLD}npm${RESET}"
+        npm install | sed "s/^/${BG_BRIGHT_MAGENTA}${BRIGHT_BLACK} Install ${RESET}/"
+    fi
+  fi
+  # BACKEND
+  if ! dir_exists "server/.venv"; then
+    if ! has_command "uv"; then
+      # uv is not installed
+      echo "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - you need 'uv' to run the Python server"
+      if isMacOrLinux; then
+        echo "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - you can find out more about UV here: https://docs.astral.sh/uv/"
+        read -rp "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - install now?" choice
+        case "$choice" in 
+          [Yy]* ) install_uv;;
+          * ) echo "Ok. Bye."; exit 1;;
+        esac
+      else
+        echo "${BG_BRIGHT_RED}${BOLD}${BRIGHT_BLACK} Install ${RESET} - goto to UV site (https://docs.astral.sh/uv/) for installation directions"
+        exit 1;
+      fi
+      uv_sync
+    fi
+    uv_sync
+  fi
+}
+
+config() {
+  if ! file_exists ".env"; then
+    echo "${BG_YELLOW}${BRIGHT_BLACK}${BOLD} Config ${RESET} no ${BLUE}.env${RESET} file found at root so copying over the ${BLUE}.env.sample${RESET} as a starting point "
+    cp .env.sample .env &>/dev/null
+  else
+    local keys=()
+    if is_key_set ".env" "ANTHROPIC_API_KEY"; then
+      keys+=("Anthropic")
+    fi
+    if is_key_set ".env" "OPENAI_API_KEY"; then
+      keys+=("OpenAI")
+    fi
+    if is_key_set ".env" "GEMINI_API_KEY"; then
+      keys+=("Gemini")
+    fi
+    if is_key_set ".env" "DEEPSEEK_API_KEY"; then
+      keys+=("DeepSeek")
+    fi
+    echo "${BG_YELLOW}${BRIGHT_BLACK}${BOLD} Config ${RESET} API Keys set: ${keys[*]}"
+  fi
+}
+
+info() {
+  echo "${BG_BRIGHT_BLUE}${BOLD}${BRIGHT_BLACK}  Info  ${RESET} Benchy Video: https://youtu.be/OwUm-4I22QI"
+}
+
+##############################################################################
+# Function: track
+# 
+# Usage:  track "<PREFIX>" <command> [args...]
+# 
+# - Launches the given command as a background job
+# - Redirects stdin from /dev/null so it won’t hang or get SIGTTIN
+# - Pipes output to `sed` to prepend a prefix for each line
+# - Captures the PID in the global 'pids' array
+##############################################################################
+track() {
+  local prefix="$1"
+  shift
+
+  (
+    FORCE_COLOR=1 "$@" < /dev/null 2>&1 | sed "s/^/$prefix /"
+  ) &
+  
+  local pid=$!
+  pids+=("$pid")
+
+  echo "${BG_BRIGHT_BLACK}${BRIGHT_WHITE}Service ${RESET} - started service \"$*\" with PID ${YELLOW}$pid${RESET}" >&2
+}
+
+##############################################################################
+# Function: waitFor
+# 
+# - Waits for all tracked PIDs to finish
+##############################################################################
+waitFor() {
+  wait "${pids[@]}"
+}
+
+##############################################################################
+# Function: cleanup
+# 
+# - Triggered on SIGINT (Ctrl+C), SIGTERM, or script exit
+# - First sends SIGINT to each process (graceful shutdown)
+# - Then after a brief pause, SIGKILL any process that’s still running
+# - Finally waits for them to terminate
+##############################################################################
+cleanup() {
+  echo ""
+  echo "Shutting down Benchy..."
+  
+  # Graceful kill
+  for pid in "${pids[@]}"; do
+    kill -INT "$pid" 2>/dev/null || true
+  done
+  
+  sleep 1
+  
+  # Force kill if still alive
+  for pid in "${pids[@]}"; do
+    if kill -0 "$pid" 2>/dev/null; then
+      echo "Force-killing PID $pid"
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+  done
+  
+  # Wait on them to exit fully
+  wait
+  echo "All background processes have been shut down."
+}
+trap cleanup SIGINT SIGTERM EXIT
+
+echo ""
+
+install
+config
+info
+
+track "${BG_GREEN}${BOLD}${BRIGHT_BLACK}Frontend${RESET}" bun run dev
+cd "./server" &>/dev/null|| exit
+track "${BG_BLUE}${BOLD}${BRIGHT_BLACK} Server ${RESET}" uv run python server.py
+cd - &>/dev/null|| exit
+
+waitFor
