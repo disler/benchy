@@ -1,6 +1,6 @@
 import pytest
 from modules.openai_llm import predictive_prompt
-from modules.llm_models import prompt
+from modules.llm_models import simple_prompt
 from modules.data_types import ModelAlias, PromptResponse
 
 
@@ -88,7 +88,7 @@ def test_predictive_prompt_autocomplete(input_text, expected_completion):
 )
 def test_prompt_ping(model_alias):
     test_prompt = "Say 'pong' and nothing else"
-    result = prompt(test_prompt, model_alias)
+    result = simple_prompt(test_prompt, model_alias)
 
     assert isinstance(result, PromptResponse)
     assert isinstance(result.response, str)

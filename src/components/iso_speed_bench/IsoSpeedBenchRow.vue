@@ -6,7 +6,7 @@
     >
       <div
         class="provider-logo-wrapper"
-        style="display: flex; align-items;: center"
+        style="display: flex; align-items: center"
       >
         <div class="provider-logo" v-if="getProviderFromModel">
           <img
@@ -68,6 +68,22 @@
             <span>{{ modelReport.average_tokens_per_second.toFixed(2) }}</span>
           </div>
         </template>
+
+        <div class="awards">
+          <div
+            v-for="award in awards"
+            :key="award"
+            :class="['award-badge', award]"
+          >
+            <span v-if="award === 'fastest'">⚡ Fastest Overall</span>
+            <span v-else-if="award === 'slowest'">🐢 Slowest Overall</span>
+            <span v-else-if="award === 'most_accurate'">🎯 Most Accurate</span>
+            <span v-else-if="award === 'least_accurate'"
+              >🤔 Least Accurate</span
+            >
+            <span v-else-if="award === 'perfection'">🏆 Perfect Score</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -115,6 +131,44 @@
 
 <script setup lang="ts">
 import { store } from "../../stores/isoSpeedBenchStore";
+
+const awards = computed<IsoBenchAward[]>(() => {
+  const arr: IsoBenchAward[] = [];
+  if (!store.benchmarkReport) return arr;
+
+  // Find fastest/slowest
+  const allDurations = store.benchmarkReport.models.map(
+    (m) => m.average_total_duration_ms
+  );
+  const minDuration = Math.min(...allDurations);
+  const maxDuration = Math.max(...allDurations);
+
+  if (props.modelReport.average_total_duration_ms === minDuration) {
+    arr.push("fastest");
+  }
+  if (props.modelReport.average_total_duration_ms === maxDuration) {
+    arr.push("slowest");
+  }
+
+  // Find most/least accurate
+  const allAccuracies = store.benchmarkReport.models.map((m) => m.accuracy);
+  const maxAccuracy = Math.max(...allAccuracies);
+  const minAccuracy = Math.min(...allAccuracies);
+
+  if (props.modelReport.accuracy === maxAccuracy) {
+    arr.push("most_accurate");
+  }
+  if (props.modelReport.accuracy === minAccuracy) {
+    arr.push("least_accurate");
+  }
+
+  // Check for perfection
+  if (props.modelReport.accuracy === 1) {
+    arr.push("perfection");
+  }
+
+  return arr;
+});
 import {
   ExecEvalBenchmarkModelReport,
   ExecEvalBenchmarkOutputResult,
@@ -343,5 +397,65 @@ h2 {
       display: none;
     }
   }
+}
+
+.awards {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.award-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: white;
+  display: inline-block;
+}
+.fastest {
+  background-color: #4caf50;
+}
+.slowest {
+  background-color: #f44336;
+}
+.most_accurate {
+  background-color: #2196f3;
+}
+.least_accurate {
+  background-color: #9e9e9e;
+}
+.perfection {
+  background-color: #ffd700;
+  color: black;
+}
+
+.awards {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.award-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: white;
+  display: inline-block;
+}
+.fastest {
+  background-color: #4caf50;
+}
+.slowest {
+  background-color: #f44336;
+}
+.most_accurate {
+  background-color: #2196f3;
+}
+.least_accurate {
+  background-color: #9e9e9e;
+}
+.perfection {
+  background-color: #ffd700;
+  color: black;
 }
 </style>

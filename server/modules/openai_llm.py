@@ -5,10 +5,10 @@ from modules.tools import openai_tools_list
 from modules.data_types import SimpleToolCall, ToolsAndPrompts
 from utils import parse_markdown_backticks, timeit
 from modules.data_types import (
-    PromptResponse, 
-    ModelAlias, 
+    PromptResponse,
+    ModelAlias,
     ToolCallResponse,
-    BenchPromptResponse
+    BenchPromptResponse,
 )
 from utils import MAP_MODEL_ALIAS_TO_COST_PER_MILLION_TOKENS
 from modules.tools import all_tools_list
@@ -128,7 +128,7 @@ def bench_prompt(prompt: str, model: str) -> BenchPromptResponse:
             completion = openai_client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
-                stream=False
+                stream=False,
             )
             elapsed_ms = t()
 
@@ -185,3 +185,30 @@ def predictive_prompt(prompt: str, prediction: str, model: str) -> PromptRespons
         runTimeMs=t(),  # Get the elapsed time of just the API call
         inputAndOutputCost=cost,
     )
+
+
+def text_prompt(prompt: str, model: str) -> PromptResponse:
+    """
+    Send a prompt to OpenAI and get a response.
+    """
+    try:
+        with timeit() as t:
+            completion = openai_client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            input_tokens = completion.usage.prompt_tokens
+            output_tokens = completion.usage.completion_tokens
+            cost = get_openai_cost(model, input_tokens, output_tokens)
+
+        return PromptResponse(
+            response=completion.choices[0].message.content,
+            runTimeMs=t(),
+            inputAndOutputCost=cost,
+        )
+    except Exception as e:
+        print(f"OpenAI error: {str(e)}")
+        return PromptResponse(
+            response=f"Error: {str(e)}", runTimeMs=0.0, inputAndOutputCost=0.0
+        )

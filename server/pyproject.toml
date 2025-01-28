@@ -19,6 +19,7 @@ dependencies = [
     "aider-chat>=0.65.1",
     "typer>=0.15.1",
     "pyyaml>=6.0.2",
+    "google-genai>=0.6.0",
 ]
 
 [tool.pytest.ini_options]

@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  width: fit-content;
 }
 
 h1 {
@@ -59,8 +60,7 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
+  max-width: 1580px;
   margin: 0 auto;
-  padding: 2rem;
 }
 

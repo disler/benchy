@@ -1,7 +1,7 @@
 import anthropic
 import os
 import json
-from modules.data_types import ModelAlias, ToolsAndPrompts
+from modules.data_types import ModelAlias, PromptResponse, ToolsAndPrompts
 from utils import MAP_MODEL_ALIAS_TO_COST_PER_MILLION_TOKENS, parse_markdown_backticks
 from modules.data_types import (
     SimpleToolCall,
@@ -48,6 +48,35 @@ def get_anthropic_cost(model: str, input_tokens: int, output_tokens: int) -> flo
     return round(input_cost + output_cost, 6)
 
 
+def text_prompt(prompt: str, model: str) -> PromptResponse:
+    """
+    Send a prompt to Anthropic and get a response.
+    """
+    try:
+        with timeit() as t:
+            message = anthropic_client.messages.create(
+                model=model,
+                max_tokens=2048,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            elapsed_ms = t()
+
+            input_tokens = message.usage.input_tokens
+            output_tokens = message.usage.output_tokens
+            cost = get_anthropic_cost(model, input_tokens, output_tokens)
+
+            return PromptResponse(
+                response=message.content[0].text,
+                runTimeMs=elapsed_ms,
+                inputAndOutputCost=cost,
+            )
+    except Exception as e:
+        print(f"Anthropic error: {str(e)}")
+        return PromptResponse(
+            response=f"Error: {str(e)}", runTimeMs=0.0, inputAndOutputCost=0.0
+        )
+
+
 def bench_prompt(prompt: str, model: str) -> BenchPromptResponse:
     """
     Send a prompt to Anthropic and get detailed benchmarking response.
@@ -78,6 +107,7 @@ def bench_prompt(prompt: str, model: str) -> BenchPromptResponse:
             load_duration_ms=0.0,
             errored=True,
         )
+
 
 def tool_prompt(prompt: str, model: str) -> ToolCallResponse:
     """

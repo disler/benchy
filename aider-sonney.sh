@@ -1,0 +1,1 @@
+aider --sonnet --yes-always --no-detect-urls --no-auto-commit

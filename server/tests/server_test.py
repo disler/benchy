@@ -13,14 +13,16 @@ def client():
 @pytest.mark.parametrize(
     "model",
     [
-        ModelAlias.haiku,
-        ModelAlias.sonnet,
-        ModelAlias.gemini_pro_2,
-        ModelAlias.gemini_flash_2,
-        ModelAlias.gemini_flash_8b,
-        ModelAlias.gpt_4o_mini,
-        ModelAlias.gpt_4o,
-        ModelAlias.gpt_4o_predictive,
+        "anthropic:claude-3-5-haiku-latest",
+        "anthropic:claude-3-haiku-20240307",
+        "anthropic:claude-3-5-sonnet-20241022",
+        "gemini:gemini-1.5-pro-002",
+        "gemini:gemini-1.5-flash-002",
+        "gemini:gemini-1.5-flash-8b-latest",
+        "openai:gpt-4o-mini",
+        "openai:gpt-4o",
+        "openai:gpt-4o-predictive",
+        "openai:gpt-4o-mini-predictive",
     ],
 )
 def test_prompt(client, model):
@@ -40,10 +42,10 @@ def test_prompt(client, model):
         (
             "Write code in main.py. Next, git commit that change.",
             ["run_coder_agent", "run_git_agent"],
-            ModelAlias.gpt_4o,
+            "openai:gpt-4o",
         ),
-        ("Write some code", ["run_coder_agent"], ModelAlias.gpt_4o_mini),
-        ("Document this feature", ["run_docs_agent"], ModelAlias.gpt_4o),
+        ("Write some code", ["run_coder_agent"], "openai:gpt-4o-mini"),
+        ("Document this feature", ["run_docs_agent"], "openai:gpt-4o"),
     ],
 )
 def test_tool_prompt(client, prompt, expected_tool_calls, model):
@@ -82,3 +84,43 @@ def test_tool_prompt(client, prompt, expected_tool_calls, model):
     assert isinstance(data["inputAndOutputCost"], (int, float))
     assert data["runTimeMs"] > 0
     assert data["inputAndOutputCost"] >= 0
+
+
+def test_thought_bench_ollama(client):
+    """Test thought bench endpoint with Ollama DeepSeek model"""
+    response = client.post(
+        "/thought-prompt",
+        json={
+            "prompt": "What is the capital of France?",
+            "model": "ollama:deepseek-r1:8b",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()
+
+    assert "thoughts" in data
+    assert "response" in data
+    assert data["model"] == "ollama:deepseek-r1:8b"
+    assert "paris" in data["response"].lower()
+    assert not data["error"]
+
+
+def test_thought_bench_deepseek(client):
+    """Test thought bench endpoint with DeepSeek Reasoner model"""
+    response = client.post(
+        "/thought-prompt",
+        json={
+            "prompt": "What is the capital of France?",
+            "model": "deepseek:deepseek-reasoner",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()
+
+    assert "thoughts" in data
+    assert "response" in data
+    assert data["model"] == "deepseek:deepseek-reasoner"
+    assert "paris" in data["response"].lower()
+    assert not data["error"]

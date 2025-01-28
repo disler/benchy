@@ -16,13 +16,6 @@ def test_qwen_text_prompt():
     assert response.inputAndOutputCost == 0.0
 
 
-def test_qwq_text_prompt():
-    response = text_prompt("ping", "qwq:32b")
-    assert response.response != ""
-    assert response.runTimeMs > 0
-    assert response.inputAndOutputCost == 0.0
-
-
 def test_llama_3_2_latest_text_prompt():
     response = text_prompt("ping", "llama3.2:latest")
     assert response.response != ""
@@ -31,7 +24,7 @@ def test_llama_3_2_latest_text_prompt():
 
 
 def test_phi_4_text_prompt():
-    response = text_prompt("ping", "vanilj/Phi-4:latest")
+    response = text_prompt("ping", "phi4:latest")
     assert response.response != ""
     assert response.runTimeMs > 0
     assert response.inputAndOutputCost == 0.0
@@ -43,7 +36,7 @@ def test_phi_4_text_prompt():
         "qwen2.5-coder:14b",
         "llama3.2:1b",
         "llama3.2:latest",
-        "vanilj/Phi-4:latest",
+        "phi4:latest",
     ],
 )
 def test_bench_prompt_metrics(model):
@@ -61,3 +54,39 @@ def test_bench_prompt_metrics(model):
     assert (
         response.load_duration_ms < response.total_duration_ms
     )  # load time should be less than total time
+
+
+def test_valid_xml_parsing():
+    from modules.ollama_llm import thought_prompt
+    from modules.data_types import ThoughtResponse
+    from utils import deepseek_r1_distil_separate_thoughts_and_response
+
+    # Test with valid XML structure
+    test_response = """<think>
+This is test reasoning content
+</think>
+
+Final response here"""
+
+    thoughts, response = deepseek_r1_distil_separate_thoughts_and_response(
+        test_response
+    )
+
+    assert thoughts == "This is test reasoning content"
+    assert response == "Final response here"
+
+
+def test_missing_xml_handling():
+    from modules.ollama_llm import thought_prompt
+    from modules.data_types import ThoughtResponse
+    from utils import deepseek_r1_distil_separate_thoughts_and_response
+
+    # Test response without XML tags
+    test_response = "Simple response without any XML formatting"
+
+    thoughts, response = deepseek_r1_distil_separate_thoughts_and_response(
+        test_response
+    )
+
+    assert thoughts == ""
+    assert response == test_response

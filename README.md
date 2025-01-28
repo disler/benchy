@@ -5,7 +5,11 @@
 > 
 > Enter BENCHY. A chill, live benchmark tool that lets you see the performance, price, and speed of LLMs in a side by side comparison for SPECIFIC use cases.
 >
-> Watch the walk through [video here](https://youtu.be/OwUm-4I22QI)
+> Watch the latest development [video here](https://youtu.be/UgSGtBZnwEo)
+
+<img src="./images/deepseek-r1.png" alt="deepseek-r1" style="max-width: 800px;">
+
+<img src="./images/o1-ai-coding-limit-testing.png" alt="o1-ai-coding-limit-testing" style="max-width: 800px;">
 
 <img src="./images/m4-max-mac-book-pro-benchmarked.png" alt="m4-mac-book-pro" style="max-width: 800px;">
 
@@ -14,6 +18,12 @@
 <img src="./images/perf-price-speed-pick-two.png" alt="pick-two" style="max-width: 800px;">
 
 ## Benchy Micro Apps
+- [Thought Bench](https://youtu.be/UgSGtBZnwEo)
+  - Goal: Compare multiple reasoning models (Deepseek R1, Gemini 2.0 Flash Thinking, OpenAI o1, ,etc) thoughts side by side in parallel.
+  - Watch the walk through [video here](https://youtu.be/UgSGtBZnwEo)
+  - Front end: [src/pages/ThoughtBench.vue](src/pages/ThoughtBench.vue)
+- [BIG AI Coding Updates to Benchy](https://youtu.be/y_ywOVQyafE)
+  - Watch the walk through [video here](https://youtu.be/y_ywOVQyafE)
 - [Iso Speed Bench](https://youtu.be/OwUm-4I22QI)
   - Goal: Create a unified, config file based, multi-llm provider, yes/no evaluation based benchmark for high quality insights and iteration.
   - Watch the M4 Unboxing and benchmark [video here](https://youtu.be/OwUm-4I22QI)
@@ -41,6 +51,7 @@
 - `server/modules/anthropic_llm.py` - Anthropic LLM
 - `server/modules/gemini_llm.py` - Gemini LLM
 - `server/modules/ollama_llm.py` - Ollama LLM
+- `server/modules/deepseek_llm.py` - Deepseek LLM
 - `server/benchmark_data/*` - Benchmark data
 - `server/reports/*` - Benchmark results
 
@@ -62,6 +73,14 @@
   
   # Pull Qwen2.5 Coder 14B model
   ollama pull qwen2.5-coder:14b
+
+  # Pull Deepseek R1 1.5B, 7b, 8b, 14b, 32b, 70b models
+  ollama pull deepseek-r1:1.5b
+  ollama pull deepseek-r1:latest
+  ollama pull deepseek-r1:8b
+  ollama pull deepseek-r1:14b
+  ollama pull deepseek-r1:32b
+  ollama pull deepseek-r1:70b
   ```
 
 ### Client Setup
@@ -96,6 +115,7 @@ ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
 GEMINI_API_KEY=
 DEEPSEEK_API_KEY=
+FIREWORKS_API_KEY=
 
 # Start server
 uv run python server.py

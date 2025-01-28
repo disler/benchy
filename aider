@@ -1,9 +1,0 @@
-/drop
-/add       server/modules/data_types.py
-/add       server/modules/llm_models.py
-/add       server/modules/ollama_llm.py
-/add       server/server.py
-/add       server/tests/ollama_llm_test.py
-/add       server/utils.py
-/add       src/stores/autocompleteStore.ts
-/add       src/types.d.ts

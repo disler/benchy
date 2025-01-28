@@ -1,0 +1,1 @@
+aider --model o1 --architect --editor-model deepseek/deepseek-chat --yes-always --no-detect-urls --no-auto-commit

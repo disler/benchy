@@ -43,7 +43,7 @@ function loadDefaultState() {
 
         rowData: [
             {
-                model: "gpt-4o-mini",
+                model: "openai:gpt-4o-mini",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -55,7 +55,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gpt-4o",
+                model: "openai:gpt-4o",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -67,7 +67,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "claude-3-5-sonnet-20241022",
+                model: "anthropic:claude-3-5-sonnet-20241022",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -79,7 +79,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gemini-1.5-pro-002",
+                model: "gemini:gemini-1.5-pro-002",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -91,7 +91,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gemini-1.5-flash-002",
+                model: "gemini:gemini-1.5-flash-002",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -103,7 +103,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "claude-3-haiku-20240307",
+                model: "anthropic:claude-3-haiku-20240307",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -115,7 +115,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gpt-4o-mini-json",
+                model: "openai:gpt-4o-mini-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -127,7 +127,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gpt-4o-json",
+                model: "openai:gpt-4o-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -139,7 +139,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "claude-3-5-sonnet-20241022-json",
+                model: "anthropic:claude-3-5-sonnet-20241022-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -151,7 +151,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gemini-1.5-pro-002-json",
+                model: "gemini:gemini-1.5-pro-002-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -163,7 +163,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gemini-1.5-flash-002-json",
+                model: "gemini:gemini-1.5-flash-002-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -175,7 +175,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "claude-3-5-haiku-latest-json",
+                model: "anthropic:claude-3-5-haiku-latest-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -187,7 +187,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "o1-mini-json",
+                model: "openai:o1-mini-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,
@@ -199,7 +199,7 @@ function loadDefaultState() {
                 percent_correct: 0,
             },
             {
-                model: "gemini-exp-1114-json",
+                model: "gemini:gemini-exp-1114-json",
                 status: 'idle',
                 toolCalls: null,
                 execution_time: null,

@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from time import time
 import yaml
+import concurrent.futures
+from modules.data_types import ThoughtResponse
 from modules.data_types import (
     ExecEvalBenchmarkReport,
     ModelAlias,
@@ -22,12 +24,13 @@ app = Flask(__name__)
 
 @app.route("/prompt", methods=["POST"])
 def handle_prompt():
+    """Handle a prompt request and return the model's response."""
     data = request.get_json()
     prompt = data["prompt"]
-    model = ModelAlias(data["model"])
+    model = data["model"]  # store as string
 
     start_time = time()
-    prompt_response = llm_models.prompt(prompt, model)
+    prompt_response = llm_models.simple_prompt(prompt, model)
     run_time_ms = int((time() - start_time) * 1000)
 
     # Update the runtime in the response
@@ -44,10 +47,9 @@ def handle_prompt():
 
 @app.route("/tool-prompt", methods=["POST"])
 def handle_tool_prompt():
+    """Handle a tool prompt request and return the tool calls."""
     data = request.get_json()
-    prompt_with_tools = PromptWithToolCalls(
-        prompt=data["prompt"], model=ModelAlias(data["model"])
-    )
+    prompt_with_tools = PromptWithToolCalls(prompt=data["prompt"], model=data["model"])
 
     start_time = time()
     tool_response = llm_models.tool_prompt(prompt_with_tools)
@@ -70,8 +72,41 @@ def handle_tool_prompt():
     )
 
 
+@app.route("/thought-prompt", methods=["POST"])
+def handle_thought_bench():
+    """Handle a thought bench request and return the model's response."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON payload"}), 400
+
+    prompt = data.get("prompt")
+    model = data.get("model")
+
+    if not prompt or not model:
+        return jsonify({"error": "Missing 'prompt' or 'model' in request"}), 400
+
+    try:
+        response = llm_models.thought_prompt(prompt, model)
+        result = {
+            "model": model,
+            "thoughts": response.thoughts,
+            "response": response.response,
+            "error": response.error,
+        }
+    except Exception as e:
+        result = {
+            "model": model,
+            "thoughts": "",
+            "response": f"Error: {str(e)}",
+            "error": str(e),
+        }
+
+    return jsonify(result), 200
+
+
 @app.route("/iso-speed-bench", methods=["POST"])
 def handle_iso_speed_bench():
+    """Handle an ISO speed benchmark request with YAML input."""
     # Validate content type
     if not request.content_type == "application/yaml":
         return (
@@ -146,6 +181,7 @@ def handle_iso_speed_bench():
 
 
 def main():
+    """Run the Flask application."""
     app.run(debug=True, port=5000)
 
 

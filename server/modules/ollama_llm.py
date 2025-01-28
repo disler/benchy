@@ -1,6 +1,6 @@
 from ollama import chat
-from modules.data_types import PromptResponse, BenchPromptResponse
-from utils import timeit
+from modules.data_types import PromptResponse, BenchPromptResponse, ThoughtResponse
+from utils import timeit, deepseek_r1_distil_separate_thoughts_and_response
 import json
 
 
@@ -38,6 +38,48 @@ def get_ollama_costs() -> tuple[int, int]:
     Return token costs for Ollama (always 0 since it's free)
     """
     return 0, 0
+
+
+def thought_prompt(prompt: str, model: str) -> ThoughtResponse:
+    """
+    Handle thought prompts for DeepSeek R1 models running on Ollama.
+    """
+    try:
+        # Validate model name contains deepseek-r1
+        if "deepseek-r1" not in model:
+            raise ValueError(
+                f"Model {model} not supported for thought prompts. Must contain 'deepseek-r1'"
+            )
+
+        with timeit() as t:
+            # Get raw response from Ollama
+            response = chat(
+                model=model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    },
+                ],
+            )
+
+            # Extract content and parse thoughts/response
+            content = response.message.content
+            thoughts, response_content = (
+                deepseek_r1_distil_separate_thoughts_and_response(content)
+            )
+
+        return ThoughtResponse(
+            thoughts=thoughts,
+            response=response_content,
+            error=None,
+        )
+
+    except Exception as e:
+        print(f"Ollama thought error ({model}): {str(e)}")
+        return ThoughtResponse(
+            thoughts=f"Error processing request: {str(e)}", response="", error=str(e)
+        )
 
 
 def bench_prompt(prompt: str, model: str) -> BenchPromptResponse:

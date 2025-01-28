@@ -1,0 +1,475 @@
+benchmark_name: "Simple Typer Commands"
+purpose: "Evaluate the ability of a language model to convert natural language requests into Typer CLI commands."
+base_prompt: |
+  <purpose>
+      We want the LLM to parse the given natural language request (stt_request) and produce the correct CLI command.
+      Then we can run that command with Typer in a Python script named main.py.
+  </purpose>
+  
+  <instructions>
+      <instruction>We only want the CLI command as output. No explanations or additional text.</instruction>
+      <instruction>Focus on generating a Typer-based command line that can be used with a Python script called main.py.</instruction>
+      <instruction>All commands must be fully spelled out with arguments and flags exactly as required by the stt_request.</instruction>
+      <instruction>Make sure to include `python main.py` at the start of the command.</instruction>
+      <instruction>Be sure to use - for the function names instead of _</instruction>
+      <instruction>Don't use = for arguments, use spaces instead</instruction>
+  </instructions>
+
+  <python-typer-commands>
+    import typer
+    from typing import Optional
+
+    app = typer.Typer()
+
+    @app.command()
+    def ping_server(
+        wait: bool = typer.Option(False, "--wait", help="Wait for server response?")
+    ):
+        """
+        Pings the server, optionally waiting for a response.
+        """
+        pass
+
+    @app.command()
+    def show_config(
+        verbose: bool = typer.Option(False, "--verbose", help="Show config in detail?")
+    ):
+        """
+        Shows the current configuration.
+        """
+        pass
+
+    @app.command()
+    def list_files(
+        path: str = typer.Argument(..., help="Path to list files from"),
+        all_files: bool = typer.Option(False, "--all", help="Include hidden files")
+    ):
+        """
+        Lists files in a directory. Optionally show hidden files.
+        """
+        pass
+
+    @app.command()
+    def create_user(
+        username: str = typer.Argument(..., help="Name of the new user"),
+        role: str = typer.Option("guest", "--role", help="Role for the new user")
+    ):
+        """
+        Creates a new user with an optional role.
+        """
+        pass
+
+    @app.command()
+    def delete_user(
+        user_id: str = typer.Argument(..., help="ID of user to delete"),
+        confirm: bool = typer.Option(False, "--confirm", help="Skip confirmation prompt")
+    ):
+        """
+        Deletes a user by ID.
+        """
+        pass
+
+    @app.command()
+    def generate_report(
+        report_type: str = typer.Argument(..., help="Type of report to generate"),
+        output_file: str = typer.Option("report.json", "--output", help="Output file name")
+    ):
+        """
+        Generates a report of a specified type to a given file.
+        """
+        pass
+
+    @app.command()
+    def backup_data(
+        directory: str = typer.Argument(..., help="Directory to store backups"),
+        full: bool = typer.Option(False, "--full", help="Perform a full backup")
+    ):
+        """
+        Back up data to a specified directory, optionally performing a full backup.
+        """
+        pass
+
+    @app.command()
+    def restore_data(
+        file_path: str = typer.Argument(..., help="File path of backup to restore"),
+        overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing data")
+    ):
+        """
+        Restores data from a backup file.
+        """
+        pass
+
+    @app.command()
+    def summarize_logs(
+        logs_path: str = typer.Argument(..., help="Path to log files"),
+        lines: int = typer.Option(100, "--lines", help="Number of lines to summarize")
+    ):
+        """
+        Summarizes log data from a specified path, limiting lines.
+        """
+        pass
+
+    @app.command()
+    def upload_file(
+        file_path: str = typer.Argument(..., help="Path of file to upload"),
+        destination: str = typer.Option("remote", "--destination", help="Destination label"),
+        secure: bool = typer.Option(True, "--secure", help="Use secure upload")
+    ):
+        """
+        Uploads a file to a destination, optionally enforcing secure upload.
+        """
+        pass
+
+    @app.command()
+    def download_file(
+        url: str = typer.Argument(..., help="URL of file to download"),
+        output_path: str = typer.Option(".", "--output", help="Local output path"),
+        retry: int = typer.Option(3, "--retry", help="Number of times to retry")
+    ):
+        """
+        Downloads a file from a URL with a specified number of retries.
+        """
+        pass
+
+    @app.command()
+    def filter_records(
+        source: str = typer.Argument(..., help="Data source to filter"),
+        query: str = typer.Option("", "--query", help="Filtering query string"),
+        limit: int = typer.Option(10, "--limit", help="Limit the number of results")
+    ):
+        """
+        Filters records from a data source using a query, limiting the number of results.
+        """
+        pass
+
+    @app.command()
+    def validate_schema(
+        schema_file: str = typer.Argument(..., help="Path to schema file"),
+        data_file: str = typer.Option("", "--data", help="Path to data file to check"),
+        strict: bool = typer.Option(True, "--strict", help="Enforce strict validation")
+    ):
+        """
+        Validates a schema, optionally checking a data file with strict mode.
+        """
+        pass
+
+    @app.command()
+    def sync_remotes(
+        remote_name: str = typer.Argument(..., help="Name of remote to sync"),
+        force: bool = typer.Option(False, "--force", help="Force syncing without prompting")
+    ):
+        """
+        Syncs with a remote repository, optionally forcing the operation.
+        """
+        pass
+
+    @app.command()
+    def simulate_run(
+        scenario: str = typer.Argument(..., help="Simulation scenario"),
+        cycles: int = typer.Option(5, "--cycles", help="Number of cycles to simulate"),
+        debug: bool = typer.Option(False, "--debug", help="Show debug output")
+    ):
+        """
+        Simulates a scenario for a given number of cycles, optionally showing debug output.
+        """
+        pass
+
+    @app.command()
+    def compare_files(
+        file_a: str = typer.Argument(..., help="First file to compare"),
+        file_b: str = typer.Argument(..., help="Second file to compare"),
+        diff_only: bool = typer.Option(False, "--diff-only", help="Show only the differences")
+    ):
+        """
+        Compares two files, optionally showing only differences.
+        """
+        pass
+
+    @app.command()
+    def encrypt_data(
+        input_path: str = typer.Argument(..., help="Path of the file to encrypt"),
+        output_path: str = typer.Option("encrypted.bin", "--output", help="Output file"),
+        algorithm: str = typer.Option("AES", "--algorithm", help="Encryption algorithm"),
+    ):
+        """
+        Encrypts data using a specified algorithm and writes to an output file.
+        """
+        pass
+
+    @app.command()
+    def decrypt_data(
+        encrypted_file: str = typer.Argument(..., help="Path to encrypted file"),
+        key: str = typer.Option(..., "--key", help="Decryption key"),
+        output_path: str = typer.Option("decrypted.txt", "--output", help="Output file")
+    ):
+        """
+        Decrypts an encrypted file using a key.
+        """
+        pass
+
+    @app.command()
+    def transform_data(
+        input_file: str = typer.Argument(..., help="File to transform"),
+        output_format: str = typer.Option("json", "--format", help="Output format"),
+        columns: str = typer.Option(None, "--columns", help="Comma-separated columns to extract")
+    ):
+        """
+        Transforms data from a file into a specified format, optionally extracting columns.
+        """
+        pass
+
+    @app.command()
+    def upload_changes(
+        source_dir: str = typer.Argument(..., help="Directory of changes to upload"),
+        incremental: bool = typer.Option(False, "--incremental", help="Incremental upload"),
+        confirm: bool = typer.Option(False, "--confirm", help="Skip confirmation prompt")
+    ):
+        """
+        Uploads changes from a directory, optionally in incremental mode.
+        """
+        pass
+
+    @app.command()
+    def migrate_database(
+        old_db: str = typer.Argument(..., help="Path to old database"),
+        new_db: str = typer.Option(..., "--new-db", help="Path to new database"),
+        dry_run: bool = typer.Option(False, "--dry-run", help="Perform a trial run without changing data")
+    ):
+        """
+        Migrates data from an old database to a new one, optionally doing a dry run.
+        """
+        pass
+
+    @app.command()
+    def health_check(
+        service_name: str = typer.Argument(..., help="Service to check"),
+        timeout: int = typer.Option(30, "--timeout", help="Timeout in seconds"),
+        alert: bool = typer.Option(False, "--alert", help="Send alert if check fails")
+    ):
+        """
+        Checks the health of a service within a specified timeout, optionally sending alerts.
+        """
+        pass
+
+    @app.command()
+    def search_logs(
+        keyword: str = typer.Argument(..., help="Keyword to search"),
+        log_file: str = typer.Option("system.log", "--log", help="Log file to search in"),
+        case_sensitive: bool = typer.Option(False, "--case-sensitive", help="Enable case-sensitive search")
+    ):
+        """
+        Searches for a keyword in a log file, optionally using case-sensitive mode.
+        """
+        pass
+
+    @app.command()
+    def stats_by_date(
+        date: str = typer.Argument(..., help="Date in YYYY-MM-DD to query stats"),
+        show_raw: bool = typer.Option(False, "--show-raw", help="Display raw data")
+    ):
+        """
+        Shows statistics for a specific date, optionally displaying raw data.
+        """
+        pass
+
+    @app.command()
+    def publish_update(
+        version: str = typer.Argument(..., help="Version tag to publish"),
+        channel: str = typer.Option("stable", "--channel", help="Release channel"),
+        note: str = typer.Option("", "--note", help="Release note or description")
+    ):
+        """
+        Publishes an update to a specified release channel with optional notes.
+        """
+        pass
+
+    @app.command()
+    def check_version(
+        local_path: str = typer.Argument(..., help="Local path to check"),
+        remote_url: str = typer.Option("", "--remote", help="Remote URL for comparison"),
+        detailed: bool = typer.Option(False, "--detailed", help="Show detailed version info")
+    ):
+        """
+        Checks the version of a local path against a remote source, optionally showing details.
+        """
+        pass
+
+    @app.command()
+    def queue_task(
+        task_name: str = typer.Argument(..., help="Name of the task to queue"),
+        priority: int = typer.Option(1, "--priority", help="Priority of the task"),
+        delay: int = typer.Option(0, "--delay", help="Delay in seconds before starting task")
+    ):
+        """
+        Queues a task with a specified priority and optional delay.
+        """
+        pass
+
+    @app.command()
+    def remove_task(
+        task_id: str = typer.Argument(..., help="ID of the task to remove"),
+        force: bool = typer.Option(False, "--force", help="Remove without confirmation")
+    ):
+        """
+        Removes a queued task by ID, optionally forcing removal without confirmation.
+        """
+        pass
+
+    @app.command()
+    def list_tasks(
+        show_all: bool = typer.Option(False, "--all", help="Show all tasks, including completed"),
+        sort_by: str = typer.Option("priority", "--sort-by", help="Sort tasks by this field")
+    ):
+        """
+        Lists tasks, optionally including completed tasks or sorting by a different field.
+        """
+        pass
+
+    @app.command()
+    def inspect_task(
+        task_id: str = typer.Argument(..., help="ID of the task to inspect"),
+        json_output: bool = typer.Option(False, "--json", help="Show output in JSON format")
+    ):
+        """
+        Inspects a specific task by ID, optionally in JSON format.
+        """
+        pass
+  </python-typer-commands>
+
+  <stt-requests>
+    {{stt_request}}
+  </stt-requests>
+
+evaluator: "raw_string_evaluator"
+models: # warning slow unless your device is cracked
+#   - "llama3.2:1b"
+#   - "llama3.2:latest"
+#   - "qwen2.5-coder:14b"
+#   - "falcon3:10b"
+#   - "vanilj/Phi-4:latest"
+  - "anthropic~claude-3-5-sonnet-latest"
+  - "deepseek~deepseek-chat"
+  - "deepseek~deepseek-reasoner"
+  - "openai~o1"
+  - "openai~o1-mini"
+model_provider: "ollama"
+prompts:
+  - dynamic_variables:
+      stt_request: "Ping the server quickly"
+    expectation: "python main.py ping-server"
+
+  - dynamic_variables:
+      stt_request: "Show me the configuration details"
+    expectation: "python main.py show-config --verbose"
+
+  - dynamic_variables:
+      stt_request: "Please list files in /home/user including hidden ones"
+    expectation: "python main.py list-files /home/user --all"
+
+  - dynamic_variables:
+      stt_request: "Create a new user named alice with role admin"
+    expectation: "python main.py create-user alice --role admin"
+
+  - dynamic_variables:
+      stt_request: "Delete user with ID user123, skip confirmation"
+    expectation: "python main.py delete-user user123 --confirm"
+
+  - dynamic_variables:
+      stt_request: "Generate a sales report in the file sales_report.csv"
+    expectation: "python main.py generate-report sales --output sales_report.csv"
+
+  - dynamic_variables:
+      stt_request: "Back up data to /var/backups with a full backup"
+    expectation: "python main.py backup-data /var/backups --full"
+
+  - dynamic_variables:
+      stt_request: "Restore data from backup.tar and overwrite existing stuff"
+    expectation: "python main.py restore-data backup.tar --overwrite"
+
+  - dynamic_variables:
+      stt_request: "Summarize logs from /var/log/app, show 200 lines"
+    expectation: "python main.py summarize-logs /var/log/app --lines 200"
+
+  - dynamic_variables:
+      stt_request: "Upload the file data.csv to staging with secure upload"
+    expectation: "python main.py upload-file data.csv --destination staging --secure"
+
+  - dynamic_variables:
+      stt_request: "Download from http://example.com/myfile.zip to downloads and retry 5 times"
+    expectation: "python main.py download-file http://example.com/myfile.zip --output downloads --retry 5"
+
+  - dynamic_variables:
+      stt_request: "Filter records from database using name='john' and limit to 2 results"
+    expectation: "python main.py filter-records database --query name='john' --limit 2"
+
+  - dynamic_variables:
+      stt_request: "Validate schema in schema.json with data file record1.json in strict mode"
+    expectation: "python main.py validate-schema schema.json --data record1.json --strict"
+
+  - dynamic_variables:
+      stt_request: "Sync the remote called origin forcefully"
+    expectation: "python main.py sync-remotes origin --force"
+
+  - dynamic_variables:
+      stt_request: "Simulate run scenario test_scenario for 10 cycles in debug mode"
+    expectation: "python main.py simulate-run test_scenario --cycles 10 --debug"
+
+  - dynamic_variables:
+      stt_request: "Compare file old.txt and new.txt only showing differences"
+    expectation: "python main.py compare-files old.txt new.txt --diff-only"
+
+  - dynamic_variables:
+      stt_request: "Encrypt doc.txt with AES and output secret.dat"
+    expectation: "python main.py encrypt-data doc.txt --output secret.dat --algorithm AES"
+
+  - dynamic_variables:
+      stt_request: "Decrypt secrets.bin with key=abcd1234 and write to plain.txt"
+    expectation: "python main.py decrypt-data secrets.bin --key abcd1234 --output plain.txt"
+
+  - dynamic_variables:
+      stt_request: "Transform the data in export.csv to YAML format extracting only name,email columns"
+    expectation: "python main.py transform-data export.csv --format yaml --columns name,email"
+
+  - dynamic_variables:
+      stt_request: "Upload changes from the local-changes folder with incremental and skip confirmation"
+    expectation: "python main.py upload-changes local-changes --incremental --confirm"
+
+  - dynamic_variables:
+      stt_request: "Migrate the DB from legacy.db to new.db in dry run mode"
+    expectation: "python main.py migrate-database legacy.db --new-db new.db --dry-run"
+
+  - dynamic_variables:
+      stt_request: "Perform a health check on service order-processor with a 45-second timeout and send an alert if it fails"
+    expectation: "python main.py health-check order-processor --timeout 45 --alert"
+
+  - dynamic_variables:
+      stt_request: "Search for the word 'ERROR' in error.log in case-sensitive mode"
+    expectation: "python main.py search-logs ERROR --log error.log --case-sensitive"
+
+  - dynamic_variables:
+      stt_request: "Show me stats for date 2025-03-12 and do not display raw data"
+    expectation: "python main.py stats-by-date 2025-03-12"
+
+  - dynamic_variables:
+      stt_request: "Publish an update with version 2.0.1 to the beta channel with note 'Beta release'"
+    expectation: "python main.py publish-update 2.0.1 --channel beta --note 'Beta release'"
+
+  - dynamic_variables:
+      stt_request: "Check the version of the app folder with remote https://example.com/myrepo and show details"
+    expectation: "python main.py check-version app --remote https://example.com/myrepo --detailed"
+
+  - dynamic_variables:
+      stt_request: "Queue a task named generate-stats with priority 2 and delay 30 seconds"
+    expectation: "python main.py queue-task generate-stats --priority 2 --delay 30"
+
+  - dynamic_variables:
+      stt_request: "Remove the task ID 12345 forcibly"
+    expectation: "python main.py remove-task 12345 --force"
+
+  - dynamic_variables:
+      stt_request: "List tasks including completed ones sorted by priority"
+    expectation: "python main.py list-tasks --all --sort-by priority"
+
+  - dynamic_variables:
+      stt_request: "Inspect task with ID abcdef in JSON format"
+    expectation: "python main.py inspect-task abcdef --json"

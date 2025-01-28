@@ -51,3 +51,10 @@ def test_tool_prompt(
     # Verify timing and cost calculations
     assert result.runTimeMs > 0
     assert result.inputAndOutputCost >= 0
+
+def test_openai_text_prompt():
+    from modules.openai_llm import text_prompt
+    response = text_prompt("ping", "gpt-4o")
+    assert response.response != ""
+    assert response.runTimeMs > 0
+    assert response.inputAndOutputCost > 0.0

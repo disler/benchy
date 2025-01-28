@@ -61,7 +61,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { ExecEvalBenchmarkOutputResult } from "../../types";
 import { store } from "../../stores/isoSpeedBenchStore";
 
 function formatModelName(modelName: string): string {
